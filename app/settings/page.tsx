@@ -6,7 +6,7 @@ import { updateConfigAction } from "@/actions/updateConfigAction"
 
 
 const page = async () => {
-  let config = await prisma.systemConfig.findFirst()
+  const config = await prisma.systemConfig.findFirst()
 
   const defaultData = {
     waterUnitRate: config?.waterUnitRate || 18.0,

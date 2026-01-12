@@ -1,8 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import FormContainer from "@/components/Form/FormContainer";
-import FormInput from "@/components/Form/FormInput";
-import { SubmitButton } from "@/components/Form/SubmitButton";
-import { createTenantAction } from "@/actions/createTenant";
 import Link from "next/link";
 import TenantForm from "@/components/Tenant/TenantForm";
 
