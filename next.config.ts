@@ -1,11 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   eslint: {
-    // ✅ สั่งให้ข้ามการตรวจ ESLint ตอน Build
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // ✅ สั่งให้ข้ามการตรวจ Type ตอน Build (ถ้าจำเป็น)
     ignoreBuildErrors: true,
   },
 };
