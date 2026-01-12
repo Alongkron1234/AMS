@@ -11,6 +11,7 @@ const initialState = {
 }
 
 interface FormContainerProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action: any
   children: React.ReactNode
   redirectUrl?: string

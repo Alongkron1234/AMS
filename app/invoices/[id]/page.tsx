@@ -6,8 +6,34 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 
 export default function InvoiceDetailPage() {
+    interface InvoiceData {
+        id: string;
+        month: number;
+        year: number;
+        rentAmount: number;
+        waterMeterOld: number;
+        waterMeterNew: number;
+        waterUsage: number;
+        waterAmount: number;
+        electMeterOld: number;
+        electMeterNew: number;
+        electUsage: number;
+        electAmount: number;
+        otherAmount: number;
+        totalAmount: number;
+        status: string;
+        createdAt: string;
+        tenant: {
+            firstName: string;
+            lastName: string;
+            room: {
+                number: string;
+            };
+        };
+    }
+
     const params = useParams()
-    const [invoice, setInvoice] = useState<any>(null)
+    const [invoice, setInvoice] = useState<InvoiceData | null>(null)
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -29,7 +55,7 @@ export default function InvoiceDetailPage() {
                 <Link href="/invoices" className="text-slate-500 hover:text-blue-600 transition text-sm">
                     ← ย้อนกลับไปรายการทั้งหมด
                 </Link>
-                <button 
+                <button
                     onClick={() => window.print()}
                     className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition flex items-center gap-2"
                 >
@@ -39,7 +65,7 @@ export default function InvoiceDetailPage() {
 
             {/* --- ตัวใบแจ้งหนี้ (ส่วนที่จะพิมพ์ลงกระดาษ) --- */}
             <div className="bg-white border rounded-[2rem] p-10 md:p-16 shadow-sm print:border-none print:shadow-none print:p-0">
-                
+
                 {/* หัวเอกสาร */}
                 <div className="flex justify-between items-start mb-16">
                     <div>

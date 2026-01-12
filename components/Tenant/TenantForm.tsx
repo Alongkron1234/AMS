@@ -4,12 +4,25 @@ import FormContainer from "@/components/Form/FormContainer"
 import FormInput from "@/components/Form/FormInput"
 import { SubmitButton } from "@/components/Form/SubmitButton"
 import { createTenantAction } from "@/actions/createTenant"
-import { updateTenantAction } from "@/actions/updateTenant" // เดี๋ยวเราจะสร้างไฟล์นี้
+import { updateTenantAction } from "@/actions/updateTenant" 
+
+
+interface TenantData {
+    id: string;
+    firstName: string;
+    lastName: string;
+    idCard?: string | null;
+    phone?: string | null;
+    lineId?: string | null;
+    deposit: number;
+    startDate: Date | string;
+}
+
 
 interface TenantFormProps {
     roomId: string
     type: "create" | "edit"
-    initialData?: any // ข้อมูลผู้เช่าเดิม (สำหรับหน้า Edit)
+    initialData?: TenantData 
 }
 
 export default function TenantForm({ roomId, type, initialData }: TenantFormProps) {
@@ -46,20 +59,20 @@ export default function TenantForm({ roomId, type, initialData }: TenantFormProp
                     name="idCard" 
                     label="เลขบัตรประชาชน" 
                     type="text" 
-                    defaultValue={initialData?.idCard} 
+                    defaultValue={initialData?.idCard?.toString()} 
                 />
                 <FormInput 
                     name="phone" 
                     label="เบอร์โทรศัพท์" 
                     type="tel" 
-                    defaultValue={initialData?.phone} 
+                    defaultValue={initialData?.phone?.toString()} 
                     required 
                 />
                 <FormInput 
                     name="lineId" 
                     label="Line ID" 
                     type="text" 
-                    defaultValue={initialData?.lineId} 
+                    defaultValue={initialData?.lineId?.toString()} 
                 />
 
                 <div className="md:col-span-2 border-b pb-2 mt-4">
@@ -70,7 +83,7 @@ export default function TenantForm({ roomId, type, initialData }: TenantFormProp
                     name="deposit" 
                     label="เงินมัดจำ (บาท)" 
                     type="number" 
-                    defaultValue={initialData?.deposit} 
+                    defaultValue={initialData?.deposit?.toString()} 
                     required 
                 />
                 <FormInput 
