@@ -14,7 +14,7 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ... (User & Profile เหมือนเดิม)
+
 
 model Room {
   id     String @id @default(cuid())
@@ -23,7 +23,6 @@ model Room {
   status String @default("VACANT")
 
   tenants  Tenant[]
-  // invoices Invoice[] // Relation กลับไปหา Invoice
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -44,7 +43,6 @@ model Tenant {
   roomId String
   room   Room   @relation(fields: [roomId], references: [id])
 
-  // ✅ เพิ่ม Relation ให้รู้ว่าคนนี้เคยมีบิลอะไรบ้าง
   invoices Invoice[]
 
   isActive  Boolean  @default(true)
@@ -56,22 +54,20 @@ model Invoice {
   month        Int
   year         Int
   
-  rentAmount   Float    // ค่าห้อง (ราคามาตรฐาน ณ วันที่ออกบิล)
+  rentAmount   Float   
   
-  // 💧 ส่วนของน้ำ
-  waterMeterOld     Float    // เลขมิเตอร์น้ำครั้งก่อน
-  waterMeterNew     Float    // เลขมิเตอร์น้ำครั้งนี้
-  waterUsage   Float    // หน่วยที่ใช้ (New - Old)
-  waterAmount  Float    // จำนวนเงินค่าน้ำ
+  waterMeterOld     Float    
+  waterMeterNew     Float    
+  waterUsage   Float   
+  waterAmount  Float   
   
-  // ⚡ ส่วนของไฟ
-  electMeterOld     Float    // เลขมิเตอร์ไฟครั้งก่อน
-  electMeterNew     Float    // เลขมิเตอร์ไฟครั้งนี้
-  electUsage   Float    // หน่วยที่ใช้ (New - Old)
-  electAmount  Float    // จำนวนเงินค่าไฟ
+  electMeterOld     Float 
+  electMeterNew     Float 
+  electUsage   Float
+  electAmount  Float 
   
   otherAmount  Float    @default(0)
-  totalAmount  Float    // ยอดรวมสุทธิ (Rent + Water + Elect + Other)
+  totalAmount  Float   
   
   status       String   @default("UNPAID")
   paidAt       DateTime?
@@ -81,11 +77,11 @@ model Invoice {
   createdAt    DateTime @default(now())
 }
 
-// ✅ เพิ่มตารางตั้งค่าระบบ (จะได้แก้ราคาหน่วยน้ำไฟได้หน้าเว็บ)
+
 model SystemConfig {
   id               String   @id @default(cuid())
-  waterUnitRate    Float    @default(18.0) // ค่าน้ำต่อหน่วย
-  electricUnitRate Float    @default(7.0) // ค่าไฟต่อหน่วย
+  waterUnitRate    Float    @default(18.0) 
+  electricUnitRate Float    @default(7.0) 
   updatedAt        DateTime @updatedAt
 }
 
@@ -94,7 +90,7 @@ model Profile {
   clerkId   String  @unique
   firstName String
   lastName  String
-  userName  String // <--- ✅ ต้องมีบรรทัดนี้!
+  userName  String
   email     String
   imageUrl  String?
 
