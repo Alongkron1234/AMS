@@ -15,18 +15,7 @@ const page = async () => {
   console.log("unpain: ", unpaidInvoices)
   const totalOutstanding = unpaidInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0)
 
-  async function markAsPaid(invoiceId: string) {
-    'use server'
-    await prisma.invoice.update({
-      where: { id: invoiceId },
-      data: {
-        status: "PAID",
-        paidAt: new Date()
-      }
-    })
-    revalidatePath("/invoices")
-  }
-
+ 
   return (
     <section className="p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
