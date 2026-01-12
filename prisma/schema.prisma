@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ... (User & Profile เหมือนเดิม)
+
+model Room {
+  id     String @id @default(cuid())
+  number String @unique
+  price  Float
+  status String @default("VACANT")
+
+  tenants  Tenant[]
+  // invoices Invoice[] // Relation กลับไปหา Invoice
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tenant {
+  id        String  @id @default(cuid())
+  firstName String
+  lastName  String
+  idCard    String?
+  phone     String?
+  lineId    String?
+
+  startDate DateTime
+  endDate   DateTime?
+  deposit   Float
+
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  // ✅ เพิ่ม Relation ให้รู้ว่าคนนี้เคยมีบิลอะไรบ้าง
+  invoices Invoice[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  month        Int
+  year         Int
+  
+  rentAmount   Float    // ค่าห้อง (ราคามาตรฐาน ณ วันที่ออกบิล)
+  
+  // 💧 ส่วนของน้ำ
+  waterMeterOld     Float    // เลขมิเตอร์น้ำครั้งก่อน
+  waterMeterNew     Float    // เลขมิเตอร์น้ำครั้งนี้
+  waterUsage   Float    // หน่วยที่ใช้ (New - Old)
+  waterAmount  Float    // จำนวนเงินค่าน้ำ
+  
+  // ⚡ ส่วนของไฟ
+  electMeterOld     Float    // เลขมิเตอร์ไฟครั้งก่อน
+  electMeterNew     Float    // เลขมิเตอร์ไฟครั้งนี้
+  electUsage   Float    // หน่วยที่ใช้ (New - Old)
+  electAmount  Float    // จำนวนเงินค่าไฟ
+  
+  otherAmount  Float    @default(0)
+  totalAmount  Float    // ยอดรวมสุทธิ (Rent + Water + Elect + Other)
+  
+  status       String   @default("UNPAID")
+  paidAt       DateTime?
+  
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+// ✅ เพิ่มตารางตั้งค่าระบบ (จะได้แก้ราคาหน่วยน้ำไฟได้หน้าเว็บ)
+model SystemConfig {
+  id               String   @id @default(cuid())
+  waterUnitRate    Float    @default(18.0) // ค่าน้ำต่อหน่วย
+  electricUnitRate Float    @default(7.0) // ค่าไฟต่อหน่วย
+  updatedAt        DateTime @updatedAt
+}
+
+model Profile {
+  id        String  @id @default(cuid())
+  clerkId   String  @unique
+  firstName String
+  lastName  String
+  userName  String // <--- ✅ ต้องมีบรรทัดนี้!
+  email     String
+  imageUrl  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

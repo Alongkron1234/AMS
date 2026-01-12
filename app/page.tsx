@@ -1,103 +1,111 @@
-import Image from "next/image";
+import { auth } from "@clerk/nextjs/server"
+import { currentUser } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+import Link from "next/link"
+export default async function Home() {
+  const user = await currentUser()
 
-export default function Home() {
+  if (!user) {
+    return <div>Please Sign In</div>
+  }
+
+  if (!user.privateMetadata.hasProfile) {
+    redirect("/onboarding")
+  }
+  if (!user.privateMetadata.hasProfile) {
+    redirect("/onboarding")
+  }
+
+  const [rooms, invoices, tenants] = await Promise.all([
+        prisma.room.findMany(),
+        prisma.invoice.findMany({
+            where: { month: new Date().getMonth() + 1, year: new Date().getFullYear() }
+        }),
+        prisma.tenant.findMany({ where: { isActive: true } })
+    ])
+
+    const totalRevenue = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0)
+    const paidAmount = invoices.filter(inv => inv.status === 'PAID').reduce((sum, inv) => sum + inv.totalAmount, 0)
+    const vacantRooms = rooms.filter(r => r.status === 'VACANT').length
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+<div className="p-8 max-w-7xl mx-auto space-y-10">
+            <header>
+                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">ภาพรวมหอพักประจำเดือน</h1>
+                <p className="text-slate-500 font-medium">ข้อมูลสรุป ณ วันที่ {new Date().toLocaleDateString('th-TH', { month: 'long', year: 'numeric' })}</p>
+            </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-blue-600 p-6 rounded-[2rem] text-white shadow-xl shadow-blue-100">
+                    <p className="text-blue-100 text-sm font-bold uppercase tracking-wider mb-1">ยอดเรียกเก็บทั้งหมด</p>
+                    <h2 className="text-4xl font-black">{totalRevenue.toLocaleString()} <span className="text-lg">฿</span></h2>
+                </div>
+                <div className="bg-emerald-500 p-6 rounded-[2rem] text-white shadow-xl shadow-emerald-100">
+                    <p className="text-emerald-50 text-sm font-bold uppercase tracking-wider mb-1">ยอดที่ชำระแล้ว</p>
+                    <h2 className="text-4xl font-black">{paidAmount.toLocaleString()} <span className="text-lg">฿</span></h2>
+                </div>
+                <div className="bg-white border-2 border-slate-100 p-6 rounded-[2rem] shadow-sm">
+                    <p className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">ห้องว่างขณะนี้</p>
+                    <h2 className="text-4xl font-black text-slate-800">{vacantRooms} <span className="text-lg text-slate-400">ห้อง</span></h2>
+                </div>
+            </div>
+
+            <div className="bg-white border rounded-[2.5rem] p-8 shadow-sm">
+                <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    🏠 ผังสถานะห้องพักทั้งหมด
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                    {rooms.map((room) => (
+                        <Link key={room.id} href={`/rooms/${room.id}`}>
+                            <div className={`aspect-square rounded-2xl flex flex-col items-center justify-center border-2 transition-all hover:scale-105 active:scale-95 cursor-pointer
+                                ${room.status === 'VACANT' 
+                                    ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                                    : 'bg-slate-900 border-slate-900 text-white'}`}
+                            >
+                                <span className="text-xs font-bold uppercase opacity-60">ห้อง</span>
+                                <span className="text-xl font-black">{room.number}</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+                
+                <div className="mt-8 flex gap-6 text-xs font-bold uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-emerald-600">
+                        <div className="w-3 h-3 bg-emerald-500 rounded-full"></div> ห้องว่าง
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-900">
+                        <div className="w-3 h-3 bg-slate-900 rounded-full"></div> มีผู้เช่า
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white border rounded-[2.5rem] p-8 shadow-sm">
+                <h3 className="text-xl font-bold text-slate-800 mb-6">📢 บิลที่ยังค้างชำระ</h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-separate border-spacing-y-2">
+                        <thead>
+                            <tr className="text-slate-400 text-xs font-bold uppercase tracking-widest">
+                                <th className="px-4 py-2">ห้อง</th>
+                                <th className="px-4 py-2">ผู้เช่า</th>
+                                <th className="px-4 py-2 text-right">ยอดค้าง</th>
+                                <th className="px-4 py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {invoices.filter(inv => inv.status === 'UNPAID').map((inv: any) => (
+                                <tr key={inv.id} className="bg-slate-50 hover:bg-slate-100 transition-colors">
+                                    <td className="px-4 py-4 rounded-l-2xl font-black text-slate-700">{inv.tenant?.room?.number || '-'}</td>
+                                    <td className="px-4 py-4 font-bold text-slate-600">{inv.tenant?.firstName}</td>
+                                    <td className="px-4 py-4 text-right font-black text-red-500">{inv.totalAmount.toLocaleString()}.-</td>
+                                    <td className="px-4 py-4 rounded-r-2xl text-right">
+                                        <Link href={`/invoices/${inv.id}`} className="text-xs bg-white border px-3 py-1.5 rounded-lg font-bold hover:shadow-md transition">ดูบิล</Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
   );
 }
