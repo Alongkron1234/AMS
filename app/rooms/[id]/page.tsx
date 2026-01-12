@@ -147,7 +147,7 @@ import { checkOutAction } from "@/actions/checkOutAction"
 import { createInvoiceAction } from "@/actions/createInvoice"
 import InvoiceForm from "@/components/Invoice/InvoiceForm"
 
-const RoomDetailPage = async ({ params }: { params: { id: string } }) => {
+const RoomDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
     const room = await prisma.room.findUnique({
