@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import TenantForm from "@/components/Tenant/TenantForm"
 import Link from "next/link"
 
-export default async function EditTenantPage({ params }: { params: { id: string } }) {
+export default async function EditTenantPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
 
     const tenant = await prisma.tenant.findUnique({
