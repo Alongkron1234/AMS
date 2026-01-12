@@ -30,7 +30,7 @@ export default function TenantForm({ roomId, type, initialData }: TenantFormProp
     const action = type === "create" ? createTenantAction : updateTenantAction
 
     return (
-        <FormContainer action={action} redirectUrl={`rooms/${roomId}`}>
+        <FormContainer action={action} redirectUrl={`/rooms/${roomId}`}>
             {/* Hidden Fields */}
             <input type="hidden" name="roomId" value={roomId} />
             {type === "edit" && <input type="hidden" name="tenantId" value={initialData?.id} />}
