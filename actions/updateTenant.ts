@@ -36,6 +36,5 @@ export async function updateTenantAction(prevState: any, formData: FormData) {
         return { message: "ไม่สามารถอัปเดตข้อมูลได้" }
     }
 
-    // เมื่อแก้เสร็จ ให้กลับไปหน้าเดิม
     redirect(`/tenants/${tenantId}`)
 }
