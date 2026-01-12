@@ -8,7 +8,7 @@ const PencilIcon = () => (
     </svg>
 )
 
-const TenantDetailPage = async ({ params }: { params: { id: string } }) => {
+const TenantDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
     const tenant = await prisma.tenant.findUnique({
         where: { id },
