@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { revalidatePath } from "next/cache"
+import { updatePaid } from "@/actions/updatePaid"
 
 
 const page = async () => {
@@ -71,7 +72,11 @@ const page = async () => {
                           บิล
                         </button>
                       </Link>
-                      <form action={async () => { /* ... */ }}>
+                      <form action={async (formData) =>{
+                        "use server";
+                        await updatePaid(formData)
+                      }}>
+                        <input type="hidden" name="invoiceId" value={inv.id} />
                         <button className="bg-green-600 text-white px-2 md:px-4 py-1.5 rounded-lg text-[10px] md:text-sm font-bold whitespace-nowrap">
                           รับชำระ
                         </button>
