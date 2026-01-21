@@ -1,5 +1,4 @@
-// utils/links.ts
-import { LayoutDashboard, Home, Receipt, Users, Settings } from "lucide-react"
+import { LayoutDashboard, Home, Receipt, Users, Settings, History, HistoryIcon } from "lucide-react"
 
 export const getNavLinks = (pathname: string) => [
   {
@@ -25,5 +24,11 @@ export const getNavLinks = (pathname: string) => [
     label: "ผู้เช่า",
     icon: Users,
     active: pathname.startsWith("/tenants"),
+  },
+  {
+    href: "/historybill",
+    label: "ประวัติการชำระเงิน",
+    icon: HistoryIcon,
+    active: pathname.startsWith("/historybill"),
   },
 ]

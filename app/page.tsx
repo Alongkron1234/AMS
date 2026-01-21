@@ -2,15 +2,37 @@ import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import Image from "next/image";
 
 export default async function Home() {
   const user = await currentUser()
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold text-slate-600">Please Sign In to continue</p>
-      </div>
+      // <div className="flex items-center justify-center min-h-screen">
+      //   <p className="text-lg font-semibold text-slate-600">Please Sign In to continue</p>
+      // </div>
+      <main className="w-full">
+
+        {/* 2. ลบ rounded-3xl ออกเพื่อให้ขอบรูปชนขอบจอ */}
+    <section className="relative w-full h-screen overflow-hidden">
+  <Image
+    src="/myAMS.jpg" 
+    alt="AMS Dormitory Hero Image"
+    fill
+    priority
+    className="object-cover" 
+  />
+  
+  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+    <h1 className="text-4xl md:text-7xl font-black text-white text-center drop-shadow-2xl">
+      ยินดีต้อนรับสู่ <br />
+      <span className="text-orange-400">My AMS</span>
+    </h1>
+  </div>
+</section>
+
+      </main>
     )
   }
 
@@ -20,12 +42,12 @@ export default async function Home() {
 
   const [rooms, invoices] = await Promise.all([
     prisma.room.findMany({
-      orderBy: { number: 'asc' } 
+      orderBy: { number: 'asc' }
     }),
     prisma.invoice.findMany({
-      where: { 
-        month: new Date().getMonth() + 1, 
-        year: new Date().getFullYear() 
+      where: {
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear()
       },
       include: {
         tenant: {
@@ -75,8 +97,8 @@ export default async function Home() {
           {rooms.map((room) => (
             <Link key={room.id} href={`/rooms/${room.id}`}>
               <div className={`aspect-square rounded-2xl flex flex-col items-center justify-center border-2 transition-all hover:scale-105 active:scale-95 cursor-pointer
-                ${room.status === 'VACANT' 
-                  ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                ${room.status === 'VACANT'
+                  ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
                   : 'bg-slate-900 border-slate-900 text-white'}`}
               >
                 <span className="text-xs font-bold uppercase opacity-60">ห้อง</span>
@@ -85,7 +107,7 @@ export default async function Home() {
             </Link>
           ))}
         </div>
-        
+
         <div className="mt-8 flex gap-6 text-xs font-bold uppercase tracking-widest">
           <div className="flex items-center gap-2 text-emerald-600">
             <div className="w-3 h-3 bg-emerald-500 rounded-full"></div> ห้องว่าง
@@ -133,7 +155,7 @@ export default async function Home() {
             </tbody>
           </table>
           {invoices.filter(inv => inv.status === 'UNPAID').length === 0 && (
-             <p className="text-center text-slate-400 py-4">ไม่มีบิลค้างชำระในเดือนนี้</p>
+            <p className="text-center text-slate-400 py-4">ไม่มีบิลค้างชำระในเดือนนี้</p>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@ import HistoryStats from "@/components/History/HistorySate"
 import HistoryTable from "@/components/History/HistoryTable"
 import SearchFilter from "@/components/History/SearchFilter"
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 import Link from "next/link"
 
 interface Props {
@@ -16,7 +17,7 @@ const historybillPage = async ({searchParams}: Props) => {
 
     const {search, month} = await searchParams
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.InvoiceWhereInput = {
         status: "PAID"
     }
 
@@ -49,13 +50,10 @@ const historybillPage = async ({searchParams}: Props) => {
 
     return (
         <section className="p-4 md:p-8 max-w-6xl mx-auto space-y-8">
-            {/* 1. ส่วนหัวและสถิติ */}
             <HistoryStats total={totalCollected} />
 
-            {/* 2. ส่วนค้นหา (Client Component) */}
             <SearchFilter />
 
-            {/* 3. ส่วนตารางแสดงข้อมูล */}
             <HistoryTable invoices={paidInvoices} />
         </section>
     )

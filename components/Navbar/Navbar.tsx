@@ -32,7 +32,6 @@ export function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[250px]">
-                {/* ✅ เพิ่มส่วนหัวตรงนี้เพื่อแก้ Error */}
                 <SheetHeader className="text-left mb-4">
                   <SheetTitle className="text-blue-600 font-bold">SmartDorm</SheetTitle>
                   <SheetDescription>เมนูการใช้งาน</SheetDescription>
