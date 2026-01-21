@@ -1,7 +1,17 @@
-// components/History/HistoryTable.tsx
 import Link from "next/link";
+import { Invoice, Tenant, Room } from "@prisma/client";
 
-export default function HistoryTable({ invoices }: { invoices: any[] }) {
+type InvoiceWithDetails = Invoice & {
+    tenant: Tenant & {
+        room: Room;
+    };
+};
+
+interface HistoryTableProps {
+    invoices: InvoiceWithDetails[];
+}
+
+export default function HistoryTable({ invoices }: HistoryTableProps) {
     if (invoices.length === 0) {
         return (
             <div className="bg-white border border-slate-100 rounded-[2.5rem] p-20 text-center shadow-sm">

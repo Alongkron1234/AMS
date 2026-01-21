@@ -3,7 +3,6 @@ import HistoryTable from "@/components/History/HistoryTable"
 import SearchFilter from "@/components/History/SearchFilter"
 import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
-import Link from "next/link"
 
 interface Props {
     searchParams: Promise<{

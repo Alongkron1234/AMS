@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { revalidatePath } from "next/cache"
 import { updatePaid } from "@/actions/updatePaid"
 
 
