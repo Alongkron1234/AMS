@@ -4,7 +4,8 @@ const isProtectedRoute = createRouteMatcher([
     '/room(.*)',
     'invoices(.*)',
     'tenants(.*)',
-    'settings(.*)'
+    'settings(.*)',
+    'historybill(.*)'
 ])
 
 
